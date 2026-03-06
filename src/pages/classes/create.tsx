@@ -288,7 +288,7 @@ const ClassesCreate = () => {
                                 />
                             </FieldGroup>
 
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit" className="w-full">Create Class</Button>
                         </form>
                     </CardContent>
                 </Card>
