@@ -12,25 +12,15 @@ import { classSchema } from "@/lib/schema"
 
 import {
     Field,
-    FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
 } from "@/components/ui/field"
 
-import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
-    InputGroupTextarea,
-} from "@/components/ui/input-group"
-
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import UploadWidget from "@/components/upload-widget"
-import { error } from "console"
 
 const teachers = [
     { id: "1", name: "John Doe" },
@@ -51,20 +41,12 @@ const subjects = [
 const ClassesCreate = () => {
     const back = useBack()
 
-    const form = useForm<z.infer<typeof classSchema>>({
+    const form = useForm({
         resolver: zodResolver(classSchema),
         refineCoreProps: {
             resource: 'classes',
             action: 'create'
-        },
-        // defaultValues: {
-        //     name: "",
-        //     description: "",
-        //     subjectId: 0,
-        //     teacherId: "",
-        //     capacity: 30,
-        //     status: "active" as const,
-        // },
+        }
     })
 
     const { handleSubmit, formState: { isSubmitting, errors }, control } = form
@@ -79,7 +61,7 @@ const ClassesCreate = () => {
 
     const bannerPublicId = form.watch('bannerCldPubId');
 
-    const setBannerImage = (file, field) => {
+    const setBannerImage = (file: any, field: any) => {
         if (file) {
             field.onChange(file.url)
             form.setValue('bannerCldPubId', file.publicId, {
@@ -127,7 +109,7 @@ const ClassesCreate = () => {
                                             </FieldLabel>
                                             <UploadWidget
                                                 value={field.value ? { url: field.value, publicId: bannerPublicId ?? '' } : null}
-                                                onChange={(file: any, field: any) => setBannerImage(field, file)}
+                                                onChange={(file) => setBannerImage(file, field)}
                                             />
                                             {fieldState.invalid && (
                                                 <FieldError errors={[fieldState.error]} />
@@ -155,7 +137,7 @@ const ClassesCreate = () => {
                                                 {...field}
                                                 id="form-rhf-demo-title"
                                                 aria-invalid={fieldState.invalid}
-                                                placeholder="Introduction to  Biology - Section A"
+                                                placeholder="Introduction to Biology - Section A"
                                                 autoComplete="off"
                                             />
                                             {fieldState.invalid && (

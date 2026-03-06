@@ -3,7 +3,15 @@ import { UploadWidgetValue } from '@/types';
 import { UploadCloud } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react'
 
-const UploadWidget = ({ value = null, onChange, disabled = false }) => {
+const UploadWidget = ({
+    value = null,
+    onChange,
+    disabled = false
+}: {
+    value?: UploadWidgetValue | null,
+    onChange?: (val: UploadWidgetValue | null) => void,
+    disabled?: boolean
+}) => {
     const widgetRef = useRef<CloudinaryWidget | null>(null)
     const onChangeRef = useRef(onChange)
 
@@ -11,9 +19,14 @@ const UploadWidget = ({ value = null, onChange, disabled = false }) => {
     const [deleteToken, setDeleteToken] = useState<string | null>(null);
     const [isRemoving, setIsRemoving] = useState(false);
 
+    const prevValueRef = useRef<UploadWidgetValue | null>(value);
+
     useEffect(() => {
+        if (value?.url !== prevValueRef.current?.url) {
+            setDeleteToken(null);
+        }
         setPreview(value);
-        if (!value) setDeleteToken(null);
+        prevValueRef.current = value;
     }, [value])
 
     useEffect(() => {
@@ -42,6 +55,7 @@ const UploadWidget = ({ value = null, onChange, disabled = false }) => {
                     }
                     setPreview(payload);
                     setDeleteToken(result.info.delete_token ?? null)
+                    prevValueRef.current = payload;
                     onChangeRef.current?.(payload)
                 }
             });
@@ -115,7 +129,7 @@ const UploadWidget = ({ value = null, onChange, disabled = false }) => {
                     <UploadCloud className='icon' />
                     <div>
                         <p>Click to upload photo</p>
-                        <p>PNG, JPG up to 5MB</p>
+                        <p>PNG, JPG, WebP up to 5MB</p>
                     </div>
                 </div>
             </div>}
