@@ -10,17 +10,25 @@ import { Subject } from "@/types"
 import { useTable } from "@refinedev/react-table"
 import { ColumnDef } from "@tanstack/react-table"
 import { Search } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 const SubjectsList = () => {
     const [searchQUery, setSearchQUery] = useState('')
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
     const [selectedDepartment, setSelectedDepartment] = useState('all');
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchQuery(searchQUery);
+        }, 500);
+        return () => clearTimeout(handler);
+    }, [searchQUery]);
 
     const departmentFilters = selectedDepartment === 'all' ? [] : [
         { field: 'department', operator: 'eq' as const, value: selectedDepartment }
     ];
-    const searchFilters = searchQUery ? [
-        { field: 'name', operator: 'contains' as const, value: searchQUery }
+    const searchFilters = debouncedSearchQuery ? [
+        { field: 'name', operator: 'contains' as const, value: debouncedSearchQuery }
     ] : [];
 
     const subjectTable = useTable<Subject>({
