@@ -3,7 +3,7 @@ import { CreateView } from "@/components/refine-ui/views/create-view"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { useBack } from "@refinedev/core"
+import { useBack, useList } from "@refinedev/core"
 import { useForm } from "@refinedev/react-hook-form"
 import { Controller } from "react-hook-form"
 import * as z from 'zod'
@@ -21,20 +21,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import UploadWidget from "@/components/upload-widget"
+import { Subject, User } from "@/types"
 
-const teachers = [
-    { id: "1", name: "John Doe" },
-    { id: "2", name: "Jane Smith" },
-    { id: "3", name: "Michael Corleone" },
-];
-
-const subjects = [
-    { id: 1, name: "Mathematics", code: "MATH" },
-    { id: 2, name: "Science", code: "SCI" },
-    { id: 3, name: "History", code: "HIST" },
-    { id: 4, name: "English Literature", code: "ENGL" },
-    { id: 5, name: "Computer Science", code: "CSCI" },
-];
 
 
 
@@ -49,15 +37,42 @@ const ClassesCreate = () => {
         }
     })
 
-    const { handleSubmit, formState: { isSubmitting, errors }, control } = form
+    const { refineCore: { onFinish }, handleSubmit, formState: { isSubmitting, errors }, control } = form
 
-    const onSubmit = (data: z.infer<typeof classSchema>) => {
+    const onSubmit = async (data: z.infer<typeof classSchema>) => {
         try {
-            console.log(data)
+            await onFinish(data)
         } catch (error) {
             console.log('Error creating new classes', error)
         }
     }
+
+    const { query: subjectsQuery } = useList<Subject>({
+        resource: 'subjects',
+        pagination: {
+            pageSize: 100
+        }
+    })
+
+    const { query: teachersQuery } = useList<User>({
+        resource: 'users',
+        filters: [
+            {
+                field: 'role',
+                operator: 'eq',
+                value: 'teacher'
+            },
+        ],
+        pagination: {
+            pageSize: 100
+        }
+    })
+
+    const subjects = subjectsQuery?.data?.data || [];
+    const subjectsLoading = subjectsQuery.isLoading;
+
+    const teachers = teachersQuery?.data?.data || [];
+    const teachersLoading = teachersQuery.isLoading;
 
     const bannerPublicId = form.watch('bannerCldPubId');
 
@@ -161,6 +176,7 @@ const ClassesCreate = () => {
                                                 </FieldLabel>
                                                 <Select onValueChange={(value) => field.onChange(Number(value))}
                                                     value={field.value?.toString()}
+                                                    disabled={subjectsLoading}
                                                 >
                                                     <SelectTrigger className="w-full">
                                                         <SelectValue placeholder="Select a subject" />
@@ -191,6 +207,7 @@ const ClassesCreate = () => {
                                                 </FieldLabel>
                                                 <Select onValueChange={field.onChange}
                                                     value={field.value}
+                                                    disabled={teachersLoading}
                                                 >
                                                     <SelectTrigger className="w-full">
                                                         <SelectValue placeholder="Select a teacher" />
