@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ClassDetails } from "@/types"
 import { useTable } from "@refinedev/react-table"
 import { ColumnDef } from "@tanstack/react-table"
-import { Search, User as UserIcon } from "lucide-react"
+import { Search, User as UserIcon, Image as ImageIcon } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSelect } from "@refinedev/core"
@@ -63,12 +63,25 @@ const ClassesList = () => {
             {
                 id: 'name',
                 accessorKey: 'name',
-                size: 200,
+                size: 250,
                 header: () => <p className="column-title ml-2">Class Name</p>,
                 cell: ({ row }) => (
-                    <div className="flex flex-col ml-2">
-                        <span className="font-medium text-foreground">{row.original.name}</span>
-                        <span className="text-xs text-muted-foreground">{row.original.inviteCode}</span>
+                    <div className="flex items-center gap-3 ml-2">
+                        <div className="h-10 w-16 overflow-hidden rounded-md border bg-muted flex items-center justify-center shrink-0">
+                            {row.original.bannerUrl ? (
+                                <img
+                                    src={row.original.bannerUrl}
+                                    alt={row.original.name}
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : (
+                                <ImageIcon className="h-5 w-5 text-muted-foreground/50" />
+                            )}
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-medium text-foreground">{row.original.name}</span>
+                            <span className="text-xs text-muted-foreground">{row.original.inviteCode}</span>
+                        </div>
                     </div>
                 )
             },
