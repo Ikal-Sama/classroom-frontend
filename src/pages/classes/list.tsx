@@ -12,6 +12,7 @@ import { Search, User as UserIcon, Image as ImageIcon } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSelect } from "@refinedev/core"
+import { ShowButton } from "@/components/refine-ui/buttons/show"
 
 const ClassesList = () => {
     const [searchQuery, setSearchQuery] = useState('')
@@ -138,8 +139,16 @@ const ClassesList = () => {
                         </Badge>
                     )
                 }
+            },
+            {
+                id: 'details',
+                size: 140,
+                header: () => <p className="column-title">Details</p>,
+                cell: ({ row }) => <ShowButton resource="classes" recordItemId={row.original.id} variant="outline" size="sm">View</ShowButton>
             }
+
         ], []),
+
         refineCoreProps: {
             resource: 'classes',
             pagination: {
