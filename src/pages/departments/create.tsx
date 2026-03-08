@@ -2,12 +2,10 @@ import { CreateView, CreateViewHeader } from "@/components/refine-ui/views/creat
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { useList } from "@refinedev/core"
 import { useForm } from "@refinedev/react-hook-form"
 import { Controller } from "react-hook-form"
 import * as z from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod"
-import { subjectSchema } from "@/lib/schema"
 
 import {
     Field,
@@ -18,48 +16,37 @@ import {
 
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Department } from "@/types"
+import { departmentSchema } from "@/lib/schema"
 
-const SubjectsCreate = () => {
+const DepartmentCreate = () => {
     const form = useForm({
-        resolver: zodResolver(subjectSchema),
+        resolver: zodResolver(departmentSchema),
         refineCoreProps: {
-            resource: 'subjects',
+            resource: 'departments',
             action: 'create',
             redirect: 'list'
         }
     })
 
-    const { refineCore: { onFinish }, handleSubmit, formState: { isSubmitting, errors }, control } = form
+    const { refineCore: { onFinish }, handleSubmit, formState: { isSubmitting }, control } = form
 
-    const onSubmit = async (data: z.infer<typeof subjectSchema>) => {
+    const onSubmit = async (data: z.infer<typeof departmentSchema>) => {
         try {
             await onFinish(data)
         } catch (error) {
-            console.log('Error creating new subject', error)
+            console.log('Error creating new department', error)
         }
     }
 
-    const { query: departmentsQuery } = useList<Department>({
-        resource: 'departments',
-        pagination: {
-            pageSize: 100
-        }
-    })
-
-    const departments = departmentsQuery?.data?.data || [];
-    const departmentsLoading = departmentsQuery.isLoading;
-
     return (
-        <CreateView className="subject-view">
-            <CreateViewHeader title="Create Subject" resource="subjects" />
+        <CreateView className="department-view">
+            <CreateViewHeader title="Create Department" resource="departments" />
 
             <div className="my-4 flex items-center">
                 <Card className="max-w-2xl w-full mx-auto">
                     <CardHeader>
-                        <CardTitle className="text-2xl font-bold">Subject Details</CardTitle>
-                        <p className="text-sm text-muted-foreground">Provide the required information below to add a new subject.</p>
+                        <CardTitle className="text-2xl font-bold">Department Details</CardTitle>
+                        <p className="text-sm text-muted-foreground">Provide the required information below to add a new academic department.</p>
                     </CardHeader>
 
                     <Separator />
@@ -73,11 +60,11 @@ const SubjectsCreate = () => {
                                         render={({ field, fieldState }) => (
                                             <Field data-invalid={fieldState.invalid}>
                                                 <FieldLabel>
-                                                    Subject Name <span className="text-orange-600">*</span>
+                                                    Department Name <span className="text-orange-600">*</span>
                                                 </FieldLabel>
                                                 <Input
                                                     {...field}
-                                                    placeholder="e.g. Mathematics"
+                                                    placeholder="e.g. Computer Science"
                                                     autoComplete="off"
                                                 />
                                                 {fieldState.invalid && (
@@ -95,11 +82,11 @@ const SubjectsCreate = () => {
                                         render={({ field, fieldState }) => (
                                             <Field data-invalid={fieldState.invalid}>
                                                 <FieldLabel>
-                                                    Subject Code <span className="text-orange-600">*</span>
+                                                    Department Code <span className="text-orange-600">*</span>
                                                 </FieldLabel>
                                                 <Input
                                                     {...field}
-                                                    placeholder="e.g. MATH101"
+                                                    placeholder="e.g. CS"
                                                     autoComplete="off"
                                                 />
                                                 {fieldState.invalid && (
@@ -113,49 +100,16 @@ const SubjectsCreate = () => {
 
                             <FieldGroup>
                                 <Controller
-                                    name="departmentId"
-                                    control={control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel>
-                                                Department <span className="text-orange-600">*</span>
-                                            </FieldLabel>
-                                            <Select
-                                                onValueChange={(value) => field.onChange(Number(value))}
-                                                value={field.value?.toString()}
-                                                disabled={departmentsLoading}
-                                            >
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select a department" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {departments.map((dept) => (
-                                                        <SelectItem key={dept.id} value={dept.id.toString()}>
-                                                            {dept.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-                            </FieldGroup>
-
-                            <FieldGroup>
-                                <Controller
                                     name="description"
                                     control={control}
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
                                             <FieldLabel>
-                                                Description <span className="text-orange-600">*</span>
+                                                Description
                                             </FieldLabel>
                                             <Textarea
                                                 {...field}
-                                                placeholder="Enter subject description..."
+                                                placeholder="Enter department description..."
                                                 className="min-h-[100px]"
                                             />
                                             {fieldState.invalid && (
@@ -167,7 +121,7 @@ const SubjectsCreate = () => {
                             </FieldGroup>
 
                             <Button type="submit" className="w-full" disabled={isSubmitting}>
-                                {isSubmitting ? "Creating..." : "Create Subject"}
+                                {isSubmitting ? "Creating..." : "Create Department"}
                             </Button>
                         </form>
                     </CardContent>
@@ -177,4 +131,4 @@ const SubjectsCreate = () => {
     )
 }
 
-export default SubjectsCreate
+export default DepartmentCreate

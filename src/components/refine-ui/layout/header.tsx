@@ -13,7 +13,7 @@ import {
   useLogout,
   useRefineOptions,
 } from "@refinedev/core";
-import { LogOutIcon } from "lucide-react";
+import { Cog, LogOutIcon, UserCircle } from "lucide-react";
 
 export const Header = () => {
   const { isMobile } = useSidebar();
@@ -131,7 +131,15 @@ const UserDropdown = () => {
       <DropdownMenuTrigger>
         <UserAvatar />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="rounded-sm">
+        <DropdownMenuItem>
+          <UserCircle />
+          <span>My Profile</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Cog />
+          <span>Settings</span>
+        </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
             logout();

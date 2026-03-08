@@ -13,13 +13,20 @@ import { useNotificationProvider } from "./components/refine-ui/notification/use
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import { dataProvider } from "./providers/data";
 import Dashboard from "./pages/dashboard";
-import { BookOpen, GraduationCap, Home } from "lucide-react";
+import { BookOpen, Building, GraduationCap, Home, Sparkles } from "lucide-react";
 import { Layout } from "./components/refine-ui/layout/layout";
 import SubjectsList from "./pages/subjects/list";
 import SubjectsCreate from "./pages/subjects/create";
 import ClassesList from "./pages/classes/list";
 import ClassesCreate from "./pages/classes/create";
 import ClassesShow from "./pages/classes/show";
+import { authProvider } from "./providers/auth";
+import LoginPage from "./pages/auth/login";
+import RegisterPage from "./pages/auth/register";
+import { Authenticated } from "@refinedev/core";
+import { CatchAllNavigate, NavigateToResource } from "@refinedev/react-router";
+import DepartmentLists from "./pages/departments/list";
+import DepartmentCreate from "./pages/departments/create";
 
 function App() {
   return (
@@ -29,12 +36,17 @@ function App() {
           <DevtoolsProvider>
             <Refine
               dataProvider={dataProvider}
+              authProvider={authProvider}
               notificationProvider={useNotificationProvider()}
               routerProvider={routerProvider}
               options={{
                 syncWithLocation: true,
                 warnWhenUnsavedChanges: true,
                 projectId: "CPCuAo-A1xU4z-Vwtdu0",
+                title: {
+                  text: "Acme Academy", // Your App Name
+                  icon: <Sparkles className="text-primary" />,
+                }
               }}
               resources={[
                 {
@@ -55,15 +67,28 @@ function App() {
                   show: '/classes/show/:id',
                   meta: { label: 'Classes', icon: <GraduationCap /> }
                 },
-
+                {
+                  name: 'departments',
+                  list: '/departments',
+                  create: '/departments/create',
+                  meta: { label: 'Departments', icon: <Building /> }
+                }
               ]}
             >
               <Routes>
-                <Route element={
-                  <Layout>
-                    <Outlet />
-                  </Layout>
-                }>
+                <Route
+                  element={
+                    <Authenticated
+                      key="authenticated-inner"
+                      fallback={<CatchAllNavigate to="/login" />}
+                    >
+                      <Layout>
+                        <Outlet />
+                      </Layout>
+                    </Authenticated>
+                  }
+                >
+                  <Route index element={<NavigateToResource resource="dashboard" />} />
                   <Route path="/" element={<Dashboard />} />
 
                   <Route path="/subjects">
@@ -77,12 +102,29 @@ function App() {
                     <Route path="show/:id" element={<ClassesShow />} />
                   </Route>
 
+                  <Route path="/departments">
+                    <Route index element={<DepartmentLists />} />
+                    <Route path="create" element={<DepartmentCreate />} />
+                  </Route>
+                </Route>
+
+                <Route
+                  element={
+                    <Authenticated key="authenticated-outer" fallback={<Outlet />}>
+                      <NavigateToResource />
+                    </Authenticated>
+                  }
+                >
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
                 </Route>
               </Routes>
               <Toaster />
               <RefineKbar />
               <UnsavedChangesNotifier />
-              <DocumentTitleHandler />
+              <DocumentTitleHandler handler={(options) => {
+                return options.resource?.name + " | Acme Academy";
+              }} />
             </Refine>
             <DevtoolsPanel />
           </DevtoolsProvider>

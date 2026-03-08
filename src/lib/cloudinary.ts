@@ -18,13 +18,12 @@ export const bannerPhoto = (
     imageCldPubId: string,
     name: string
 ) => cld.image(imageCldPubId)
-    .resize(fill())
+    .resize(fill().width(1200).height(400))
     .delivery(format('auto'))
     .delivery(quality('auto'))
     .delivery(dpr('auto'))
-    .overlay(source(text(name, new TextStyle('roboto', 100).fontWeight('bold'))
+    .overlay(source(text(name, new TextStyle('Roboto', 50).fontWeight('bold'))
         .textColor('white'))
         .position(new Position()
             .gravity(
-                compass('south_west'))
-            .offsetX(0.02)))
+                compass('south_west')).offsetX(40).offsetY(180)))

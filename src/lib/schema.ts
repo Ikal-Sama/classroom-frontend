@@ -17,9 +17,12 @@ export const subjectSchema = z.object({
     description: z
         .string()
         .min(5, "Subject description must be at least 5 characters"),
-    department: z
-        .string()
-        .min(2, "Subject department must be at least 2 characters"),
+    departmentId: z.coerce
+        .number({
+            required_error: "Department is required",
+            invalid_type_error: "Department is required",
+        })
+        .min(1, "Department is required"),
 });
 
 const scheduleSchema = z.object({
@@ -69,3 +72,9 @@ export const enrollmentSchema = z.object({
         .min(1, "Class ID is required"),
     studentId: z.string().min(1, "Student ID is required"),
 });
+
+export const departmentSchema = z.object({
+    name: z.string().min(1, 'Name is required'),
+    code: z.string().min(1, 'Code is required'),
+    description: z.string().optional(),
+})

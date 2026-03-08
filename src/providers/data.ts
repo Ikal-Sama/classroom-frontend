@@ -55,6 +55,10 @@ const options: CreateDataProviderOptions = {
           if (field === 'role') params.role = value;
           if (field === 'name' || field === 'email') params.search = value;
         }
+
+        if (resource === 'departments') {
+          if (field === 'name' || field === 'code') params.search = value;
+        }
       })
 
       return params;
@@ -81,7 +85,9 @@ const options: CreateDataProviderOptions = {
     mapResponse: async (response) => {
       const json: CreateResponse = await response.json();
 
-      return json.data ?? [];
+      if (!json.data) throw new Error("Created data not found in response");
+
+      return json.data;
     }
   },
 
@@ -90,7 +96,9 @@ const options: CreateDataProviderOptions = {
     mapResponse: async (response) => {
       const json: GetOneResponse = await response.json();
 
-      return json.data ?? [];
+      if (!json.data) throw new Error("Data not found in response");
+
+      return json.data;
     }
 
   }
